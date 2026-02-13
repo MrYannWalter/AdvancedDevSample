@@ -7,6 +7,7 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <SonarQubeExclude>True</SonarQubeExclude>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AdvancedDevSample.Api\AdvancedDevSample.Api.csproj" />
     <ProjectReference Include="..\AdvancedDevSample.Application\AdvancedDevSample.Application.csproj" />
     <ProjectReference Include="..\AdvancedDevSample.Domain\AdvancedDevSample.Domain.csproj" />
     <ProjectReference Include="..\AdvancedDevSample.Infrastructure\AdvancedDevSample.Infrastructure.csproj" />

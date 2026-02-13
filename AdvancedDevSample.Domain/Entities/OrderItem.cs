@@ -13,9 +13,9 @@ namespace AdvancedDevSample.Domain.Entities
         public int Quantity { get; private set; }
         public decimal UnitPrice { get; private set; }
 
-        public OrderItem(Guid id, Guid orderId, Guid productId, int quantity, decimal unitPrice)
+        public OrderItem(Guid orderId, Guid productId, int quantity, decimal unitPrice)
         {
-            Id = id == Guid.Empty ? Guid.NewGuid() : id;
+            Id = Guid.NewGuid();
             OrderId = orderId;
             ProductId = productId;
 

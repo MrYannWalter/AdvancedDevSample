@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="DTOs\Customer\CustomerRequests\UpdateCustomerRequest.cs~RF329e8e.TMP" />
+    <None Remove="DTOs\Customer\CustomerRequests\UpdateCustomerRequest.cs~RF34dc88.TMP" />
+    <None Remove="DTOs\Customer\CustomerResponse.cs~RF20ebac.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AdvancedDevSample.Domain\AdvancedDevSample.Domain.csproj" />
   </ItemGroup>
 

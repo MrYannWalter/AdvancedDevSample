@@ -60,8 +60,7 @@ AdvancedDevSample/
 |--------------------|---------------------------------|
 | Framework          | .NET 8.0 / ASP.NET Core Web API|
 | Langage            | C# 12                          |
-| ORM                | Entity Framework Core 8.0      |
-| Base de données    | InMemory (dev) / SQLite (option)|
+| Persistance        | Dictionary<Guid, T> en mémoire (InMemoryDataStore) |
 | Documentation API  | Swagger / OpenAPI (Swashbuckle) |
-| Tests              | xUnit + WebApplicationFactory   |
+| Tests              | xUnit — 198 tests (unitaires, composants, intégration) |
 | Architecture       | Clean Architecture (4 couches)  |

@@ -1,0 +1,7 @@
+﻿E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Infrastructure\Class1.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Infrastructure\Exceptions\InfrastructureException.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Infrastructure\Persistence\InMemoryDataStore.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Infrastructure\Repositories\InMemoryCustomerRepository.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Infrastructure\Repositories\InMemoryOrderRepository.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Infrastructure\Repositories\InMemoryProductRepository.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Infrastructure\Repositories\InMemorySupplierRepository.cs

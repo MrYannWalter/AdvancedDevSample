@@ -1,4 +1,6 @@
 using AdvancedDevSample.Application.DTOs;
+using AdvancedDevSample.Application.DTOs.Order.OrderRequests;
+using AdvancedDevSample.Application.DTOs.Order.OrderResponses;
 using AdvancedDevSample.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +27,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult GetAll()
         {
             var orders = _orderService.GetAllOrders();
-            var response = orders.Select(OrderResponse.FromEntity);
+            var response = orders.Select(OrderResponse.FromOrder);
             return Ok(response);
         }
 
@@ -36,7 +38,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult GetById(Guid id)
         {
             var order = _orderService.GetOrder(id);
-            return Ok(OrderResponse.FromEntity(order));
+            return Ok(OrderResponse.FromOrder(order));
         }
 
         /// <summary>
@@ -46,7 +48,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult GetByCustomer(Guid customerId)
         {
             var orders = _orderService.GetOrdersByCustomer(customerId);
-            var response = orders.Select(OrderResponse.FromEntity);
+            var response = orders.Select(OrderResponse.FromOrder);
             return Ok(response);
         }
 
@@ -57,7 +59,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult Create([FromBody] CreateOrderRequest request)
         {
             var order = _orderService.CreateOrder(request);
-            var response = OrderResponse.FromEntity(order);
+            var response = OrderResponse.FromOrder(order);
             return CreatedAtAction(nameof(GetById), new { id = order.Id }, response);
         }
 

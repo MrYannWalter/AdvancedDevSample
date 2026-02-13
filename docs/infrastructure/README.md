@@ -4,86 +4,99 @@
 
 La couche Infrastructure est la **couche technique** qui implémente concrètement ce dont le métier a besoin. Elle répond à la question : « Comment stocker et retrouver les données ? »
 
-> **Analogie** : Si le Domain dit « j'ai besoin de retrouver un produit par son identifiant », l'Infrastructure répond « voici comment je le fais avec Entity Framework et une base de données ».
+> **Analogie** : Si le Domain dit « j'ai besoin de retrouver un produit par son identifiant », l'Infrastructure répond « voici comment je le fais avec un dictionnaire en mémoire ».
 
 ## Structure
 
 ```
 AdvancedDevSample.Infrastructure/
 ├── Persistence/
-│   └── AppDbContext.cs          ← Contexte Entity Framework (schéma de la base)
+│   └── InMemoryDataStore.cs        ← Stockage centralisé (dictionnaires)
 ├── Repositories/
-│   ├── EfProductRepository.cs   ← Implémentation pour les produits
-│   ├── EfCustomerRepository.cs  ← Implémentation pour les clients
-│   ├── EfSupplierRepository.cs  ← Implémentation pour les fournisseurs
-│   └── EfOrderRepository.cs    ← Implémentation pour les commandes
+│   ├── InMemoryProductRepository.cs   ← Implémentation pour les produits
+│   ├── InMemoryCustomerRepository.cs  ← Implémentation pour les clients
+│   ├── InMemorySupplierRepository.cs  ← Implémentation pour les fournisseurs
+│   └── InMemoryOrderRepository.cs     ← Implémentation pour les commandes
 └── Exceptions/
     └── InfrastructureException.cs ← Erreurs techniques
 ```
 
-## Le DbContext (AppDbContext)
+## Le Data Store (InMemoryDataStore)
 
-Le `AppDbContext` est le **point central** d'Entity Framework Core. Il définit :
+Le `InMemoryDataStore` est le **point central** du stockage de données. C'est une classe simple qui expose 4 dictionnaires `Dictionary<Guid, TEntity>`, un par entité :
 
-- **Quelles tables existent** : Products, Customers, Suppliers, Orders, OrderItems
-- **Comment les entités sont mappées** : types de colonnes, tailles, contraintes
-- **Les relations entre tables** : une commande contient plusieurs articles (1-N)
+- **Products** : stocke les produits indexés par leur `Id`
+- **Customers** : stocke les clients indexés par leur `Id`
+- **Suppliers** : stocke les fournisseurs indexés par leur `Id`
+- **Orders** : stocke les commandes (avec leurs articles) indexées par leur `Id`
 
-### Configuration des entités
+### Pourquoi des dictionnaires ?
 
-Chaque entité est configurée via la Fluent API dans `OnModelCreating` :
+| Avantage | Explication |
+|----------|-------------|
+| Accès O(1) | Recherche par `Id` instantanée grâce au hachage |
+| Simplicité | Pas de dépendance externe, pas de configuration |
+| Lisibilité | Le code des repositories est immédiatement compréhensible |
+| Légèreté | Zéro package NuGet supplémentaire |
 
-| Entité | Configurations principales |
-|--------|---------------------------|
-| Product | Nom max 200 car., Description max 1000 car., Prix précision 18.2 |
-| Customer | Prénom/Nom max 100 car., Email max 200 car. |
-| Supplier | Société max 200 car., Email max 200 car., Téléphone max 50 car. |
-| Order | Relation 1-N avec OrderItems, suppression en cascade |
-| OrderItem | Quantité requise, Prix unitaire précision 18.2 |
+### Enregistrement en tant que Singleton
 
-### Cas particulier : la collection Items de Order
+Le `InMemoryDataStore` est enregistré comme **Singleton** dans le conteneur d'injection :
 
-La collection `Items` dans `Order` est privée (`private readonly List<OrderItem> _items`), mais EF Core doit pouvoir y accéder. La configuration utilise `PropertyAccessMode.Field` pour dire à EF d'utiliser le champ privé `_items` directement au lieu de passer par la propriété publique `Items`.
+```csharp
+builder.Services.AddSingleton<InMemoryDataStore>();
+```
 
-Cela préserve l'**encapsulation** : seule l'entité `Order` peut ajouter/retirer des items via ses méthodes métier.
+Cela garantit qu'une **seule instance** existe pendant toute la durée de vie de l'application. Tous les repositories partagent le même store, donc les données persistent entre les requêtes HTTP tant que l'application tourne.
 
 ## Les Repositories
 
-Chaque repository implémente une interface du Domain et utilise `AppDbContext` pour les opérations CRUD.
+Chaque repository implémente une interface du Domain et utilise `InMemoryDataStore` pour les opérations CRUD.
 
 ### Pattern commun à tous les repositories
 
 ```
-public class EfXxxRepository : IXxxRepository
+public class InMemoryXxxRepository : IXxxRepository
 {
-    private readonly AppDbContext _context;
+    private readonly InMemoryDataStore _store;
 
-    Add()     → _context.Xxx.Add(entity) + SaveChanges()
-    GetById() → _context.Xxx.FirstOrDefault(x => x.Id == id)
-    ListAll() → _context.Xxx.ToList()
-    Save()    → _context.Xxx.Update(entity) + SaveChanges()
-    Remove()  → Charger puis _context.Xxx.Remove(entity) + SaveChanges()
+    Add()     → _store.Xxxs[entity.Id] = entity
+    GetById() → _store.Xxxs.TryGetValue(id, out var entity) ? entity : null
+    ListAll() → _store.Xxxs.Values.ToList()
+    Save()    → _store.Xxxs[entity.Id] = entity  (écrase l'entrée existante)
+    Remove()  → _store.Xxxs.Remove(id)
 }
 ```
 
 ### Particularité du OrderRepository
 
-Le repository des commandes utilise `.Include(o => o.Items)` pour charger systématiquement les articles avec la commande. C'est du **eager loading** : on récupère toujours la commande complète avec ses lignes.
+Le repository des commandes expose une méthode supplémentaire `GetByCustomerId(Guid customerId)` qui filtre les commandes par client :
 
-Sans cela, la collection `Items` serait vide car EF Core utilise le **lazy loading** par défaut qui ne charge pas les relations automatiquement.
+```
+_store.Orders.Values.Where(o => o.CustomerId == customerId).ToList()
+```
+
+Comme les articles (`OrderItem`) sont stockés directement dans l'objet `Order` (liste privée `_items`), il n'y a pas besoin d'eager loading comme c'était le cas avec Entity Framework. La commande est toujours complète avec ses articles.
 
 ## Gestion des erreurs techniques
 
-Toutes les opérations de base de données sont encapsulées dans des blocs `try/catch`. Les exceptions techniques (connexion perdue, contrainte violée...) sont transformées en `InfrastructureException` avec un message explicatif.
+Toutes les opérations de stockage sont encapsulées dans des blocs `try/catch`. Les exceptions techniques sont transformées en `InfrastructureException` avec un message explicatif.
 
 Le middleware intercepte ensuite ces exceptions et renvoie une erreur HTTP 500 générique, **sans exposer les détails techniques** au client. Les détails sont consignés dans les logs pour le débogage.
 
-## Base de données utilisée
+## Stockage en mémoire
 
-En développement, le projet utilise **InMemoryDatabase** d'Entity Framework :
+Le projet utilise un **stockage par dictionnaires en mémoire** :
 
-- **Avantage** : aucune installation requise, données en mémoire vive
-- **Inconvénient** : les données sont perdues à chaque redémarrage
-- **Usage** : développement, prototypage, tests
+- **Avantage** : aucune installation requise, aucune dépendance externe, accès rapide O(1)
+- **Inconvénient** : les données sont perdues à chaque redémarrage de l'application
+- **Usage** : développement, prototypage, tests, formation
 
-Pour la production, il suffit de remplacer `UseInMemoryDatabase` par `UseSqlite` ou `UseSqlServer` dans `Program.cs` sans changer aucun autre code (grâce à l'abstraction des repositories).
+### Évolution possible
+
+Si le projet nécessite une persistance durable à l'avenir, il suffit de :
+1. Ajouter les packages EF Core / Dapper / autre ORM
+2. Créer de nouvelles implémentations de repositories
+3. Changer l'enregistrement DI dans `Program.cs`
+
+Grâce à l'abstraction des interfaces (`IProductRepository`, etc.), **aucun autre code ne change** : ni les services, ni les controllers, ni les tests unitaires.

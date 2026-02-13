@@ -9,7 +9,7 @@ La couche Domain contient **toute la logique métier** de l'application. C'est i
 ## Structure
 
 ```
-AdvancedDevSample.Domain/
+AdvancedDevSample.Domain/v
 ├── Entities/          ← Les objets métier principaux
 │   ├── Product.cs     ← Un produit vendable
 │   ├── Customer.cs    ← Un client

@@ -1,0 +1,19 @@
+﻿E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\API\Integration\CustomersControllerTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\API\Integration\OrdersControllerTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\API\Integration\ProductsControllerTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\API\Integration\SuppliersControllerTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\Application\Services\CustomerServiceTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\Application\Services\OrderServiceTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\Application\Services\ProductServiceTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\Application\Services\SupplierServiceTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\Domain\Entities\CustomerTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\Domain\Entities\OrderItemTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\Domain\Entities\OrderTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\Domain\Entities\ProductTests.cs
+E:\Workspace Visual Studio\AdvancedDevSample\AdvancedDevSample.Test\Domain\Entities\SupplierTests.cs
+C:\Users\mande\.nuget\packages\microsoft.net.test.sdk\17.8.0\build\netcoreapp3.1\Microsoft.NET.Test.Sdk.Program.cs
+C:\Users\mande\.nuget\packages\microsoft.testplatform.testhost\17.8.0\build\netcoreapp3.1\x64\testhost.exe
+C:\Users\mande\.nuget\packages\microsoft.testplatform.testhost\17.8.0\build\netcoreapp3.1\x64\testhost.dll
+C:\Users\mande\.nuget\packages\xunit.runner.visualstudio\2.5.3\build\net6.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+C:\Users\mande\.nuget\packages\xunit.runner.visualstudio\2.5.3\build\net6.0\xunit.runner.reporters.netcoreapp10.dll
+C:\Users\mande\.nuget\packages\xunit.runner.visualstudio\2.5.3\build\net6.0\xunit.runner.utility.netcoreapp10.dll

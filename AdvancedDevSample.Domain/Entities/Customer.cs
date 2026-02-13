@@ -13,13 +13,13 @@ namespace AdvancedDevSample.Domain.Entities
         public string Email { get; private set; } = string.Empty;
         public bool IsActive { get; private set; }
 
-        public Customer(Guid id, string firstName, string lastName, string email, bool isActive = true)
+        public Customer(string firstName, string lastName, string email)
         {
-            Id = id == Guid.Empty ? Guid.NewGuid() : id;
+            Id = Guid.NewGuid();
             FirstName = firstName ?? throw new DomainException("Le prénom du client est obligatoire.");
             LastName = lastName ?? throw new DomainException("Le nom du client est obligatoire.");
             Email = email ?? throw new DomainException("L'email du client est obligatoire.");
-            IsActive = isActive;
+            IsActive = true;
         }
 
         public Customer()

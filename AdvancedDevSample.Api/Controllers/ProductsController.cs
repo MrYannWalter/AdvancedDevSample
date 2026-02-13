@@ -1,4 +1,5 @@
-using AdvancedDevSample.Application.DTOs;
+using AdvancedDevSample.Application.DTOs.Product.ProductRequests;
+using AdvancedDevSample.Application.DTOs.Product.ProductResponses;
 using AdvancedDevSample.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult GetAll()
         {
             var products = _productService.GetAllProducts();
-            var response = products.Select(ProductResponse.FromEntity);
+            var response = products.Select(ProductResponse.FromProduct);
             return Ok(response);
         }
 
@@ -36,7 +37,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult GetById(Guid id)
         {
             var product = _productService.GetProduct(id);
-            return Ok(ProductResponse.FromEntity(product));
+            return Ok(ProductResponse.FromProduct(product));
         }
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult Create([FromBody] CreateProductRequest request)
         {
             var product = _productService.CreateProduct(request);
-            var response = ProductResponse.FromEntity(product);
+            var response = ProductResponse.FromProduct(product);
             return CreatedAtAction(nameof(GetById), new { id = product.Id }, response);
         }
 

@@ -3,7 +3,6 @@ using AdvancedDevSample.Application.Services;
 using AdvancedDevSample.Domain.Interfaces;
 using AdvancedDevSample.Infrastructure.Persistence;
 using AdvancedDevSample.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,9 +21,8 @@ builder.Services.AddSwaggerGen(options =>
     }
 });
 
-// ===== Base de données =====
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseInMemoryDatabase("AdvancedDevSampleDb"));
+// ===== Stockage en mémoire (Singleton pour persister tant que l'app tourne) =====
+builder.Services.AddSingleton<InMemoryDataStore>();
 
 // ===== Dépendances Application =====
 builder.Services.AddScoped<ProductService>();
@@ -33,10 +31,10 @@ builder.Services.AddScoped<SupplierService>();
 builder.Services.AddScoped<OrderService>();
 
 // ===== Dépendances Infrastructure =====
-builder.Services.AddScoped<IProductRepository, EfProductRepository>();
-builder.Services.AddScoped<ICustomerRepository, EfCustomerRepository>();
-builder.Services.AddScoped<ISupplierRepository, EfSupplierRepository>();
-builder.Services.AddScoped<IOrderRepository, EfOrderRepository>();
+builder.Services.AddScoped<IProductRepository, InMemoryProductRepository>();
+builder.Services.AddScoped<ICustomerRepository, InMemoryCustomerRepository>();
+builder.Services.AddScoped<ISupplierRepository, InMemorySupplierRepository>();
+builder.Services.AddScoped<IOrderRepository, InMemoryOrderRepository>();
 
 var app = builder.Build();
 
@@ -56,3 +54,6 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapControllers();
 
 app.Run();
+
+// Rendre la classe Program accessible aux tests d'intégration
+public partial class Program { }

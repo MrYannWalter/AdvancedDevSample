@@ -27,7 +27,7 @@ La Clean Architecture résout ces problèmes en **isolant le métier** de la tec
 │    → Coordonne les cas d'utilisation métier          │
 ├─────────────────────────────────────────────────────┤
 │              Infrastructure (Technique)              │
-│        DbContext, Repositories, Configurations       │
+│       InMemoryDataStore, Repositories, Configurations│
 │    → Implémente l'accès aux données                  │
 ├─────────────────────────────────────────────────────┤
 │                  Domain (Cœur métier)                │
@@ -70,8 +70,8 @@ Exemple : **un utilisateur modifie le prix d'un produit**
    → Appelle IProductRepository.Save(product)
         │
         ▼
-4. EfProductRepository (Infrastructure)
-   → Utilise Entity Framework pour persister en base
+4. InMemoryProductRepository (Infrastructure)
+   → Stocke/met à jour dans le Dictionary en mémoire
         │
         ▼
 5. Product (Domain)
@@ -109,14 +109,17 @@ Le câblage entre les couches se fait dans `Program.cs` via l'injection de dépe
 ```
 Services (Application)          →  Scoped (une instance par requête)
 Repositories (Infrastructure)   →  Scoped (une instance par requête)
-DbContext (Infrastructure)      →  Scoped (une instance par requête)
+InMemoryDataStore (Infrastructure)      →  Singleton (instance unique partagée)
 ```
 
-Le scope `Scoped` garantit que toutes les opérations d'une même requête HTTP partagent la même instance de `DbContext`, permettant les transactions implicites.
+Le `InMemoryDataStore` est un **Singleton** pour garantir la persistance des données pendant toute la durée de vie de l'application. Les repositories sont `Scoped` pour s'aligner sur le cycle de vie des requêtes HTTP.
 
 ## Projet de tests
 
-Le projet `AdvancedDevSample.Test` a accès à toutes les couches pour pouvoir :
-- **Tests unitaires Domain** : tester les règles métier sans aucune dépendance
-- **Tests unitaires Application** : tester les services avec des fakes (doubles de test)
-- **Tests d'intégration API** : tester les controllers avec une base InMemory via `WebApplicationFactory`
+198 tests répartis en 3 niveaux, organisés en miroir de l'architecture :
+
+- **Tests unitaires Domain** (5 fichiers) : règles métier pures, aucune dépendance externe
+- **Tests de composants Application** (4 fichiers) : services testés avec les vrais repositories et `InMemoryDataStore` (pas de fakes)
+- **Tests d'intégration API** (4 fichiers) : controllers testés via `WebApplicationFactory<Program>`
+
+Convention de nommage : `Methode_DoitResultat_QuandCondition`.

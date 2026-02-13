@@ -13,13 +13,13 @@ namespace AdvancedDevSample.Domain.Entities
         public decimal Price { get; private set; }
         public bool IsActive { get; private set; }
 
-        public Product(Guid id, string name, string description, decimal price, bool isActive = true)
+        public Product(string name, string description, decimal price)
         {
-            Id = id == Guid.Empty ? Guid.NewGuid() : id;
+            Id = Guid.NewGuid();
             Name = name ?? throw new DomainException("Le nom du produit est obligatoire.");
-            Description = description ?? string.Empty;
+            Description = description ?? throw new DomainException("La description du produit est obligatoire."); ;
             Price = price > 0 ? price : throw new DomainException("Le prix doit être strictement positif.");
-            IsActive = isActive;
+            IsActive = true;
         }
 
         // Constructeur requis par certains ORMs
@@ -30,8 +30,7 @@ namespace AdvancedDevSample.Domain.Entities
 
         public void ChangePrice(decimal newPrice)
         {
-            if (!IsActive)
-                throw new DomainException("Le produit est inactif.");
+            CheckIfActive();
             if (newPrice <= 0)
                 throw new DomainException("Le prix doit être strictement positif.");
             Price = newPrice;
@@ -42,23 +41,27 @@ namespace AdvancedDevSample.Domain.Entities
             if (string.IsNullOrWhiteSpace(name))
                 throw new DomainException("Le nom du produit est obligatoire.");
             Name = name;
-            Description = description ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(description))
+                throw new DomainException("La description du produit est obligatoire.");
+            Description = description;
         }
 
         public void ApplyDiscount(decimal percentage)
         {
-            if (!IsActive)
-                throw new DomainException("Le produit est inactif.");
+            CheckIfActive();
             if (percentage <= 0 || percentage >= 100)
                 throw new DomainException("Le pourcentage de réduction doit être compris entre 0 et 100.");
 
             var newPrice = Price * (1 - percentage / 100);
-            if (newPrice <= 0)
-                throw new DomainException("Le prix après réduction doit rester positif.");
-            Price = newPrice;
+            ChangePrice(newPrice);
         }
 
         public void Deactivate() => IsActive = false;
         public void Activate() => IsActive = true;
+        public void CheckIfActive()
+        {
+            if (!IsActive)
+                throw new DomainException("Le produit est inactif.");
+        }
     }
 }

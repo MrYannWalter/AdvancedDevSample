@@ -12,7 +12,7 @@
 
 ### 1. Cloner le projet
 ```bash
-git clone <url-du-repo>
+git clone <https://github.com/MrYannWalter/AdvancedDevSample>
 cd AdvancedDevSample
 ```
 
@@ -107,7 +107,7 @@ https://localhost:7010/
 3. Créer le service dans `Application/Services/`
 4. Créer les DTOs dans `Application/DTOs/`
 5. Créer le repository dans `Infrastructure/Repositories/`
-6. Ajouter le `DbSet` dans `AppDbContext`
+6. Ajouter le dictionnaire dans `InMemoryDataStore`
 7. Créer le controller dans `Api/Controllers/`
 8. Enregistrer les dépendances dans `Program.cs`
 
@@ -115,5 +115,5 @@ https://localhost:7010/
 1. Modifier l'entité dans le Domain (ajouter la propriété/méthode)
 2. Mettre à jour le DTO Response pour exposer la nouvelle propriété
 3. Mettre à jour le DTO Request si c'est une donnée entrante
-4. Mettre à jour la configuration EF dans `AppDbContext` si nécessaire
+4. Mettre à jour `InMemoryDataStore` si nécessaire
 5. Écrire les tests unitaires correspondants

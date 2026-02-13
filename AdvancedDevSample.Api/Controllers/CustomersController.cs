@@ -1,4 +1,5 @@
-using AdvancedDevSample.Application.DTOs;
+using AdvancedDevSample.Application.DTOs.Customer.CustomerRequests;
+using AdvancedDevSample.Application.DTOs.Customer.CustomerResponses;
 using AdvancedDevSample.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult GetAll()
         {
             var customers = _customerService.GetAllCustomers();
-            var response = customers.Select(CustomerResponse.FromEntity);
+            var response = customers.Select(CustomerResponse.FromCustomer);
             return Ok(response);
         }
 
@@ -36,7 +37,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult GetById(Guid id)
         {
             var customer = _customerService.GetCustomer(id);
-            return Ok(CustomerResponse.FromEntity(customer));
+            return Ok(CustomerResponse.FromCustomer(customer));
         }
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult Create([FromBody] CreateCustomerRequest request)
         {
             var customer = _customerService.CreateCustomer(request);
-            var response = CustomerResponse.FromEntity(customer);
+            var response = CustomerResponse.FromCustomer(customer);
             return CreatedAtAction(nameof(GetById), new { id = customer.Id }, response);
         }
 

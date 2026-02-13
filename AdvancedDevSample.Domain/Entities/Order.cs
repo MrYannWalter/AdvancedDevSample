@@ -16,9 +16,9 @@ namespace AdvancedDevSample.Domain.Entities
         private readonly List<OrderItem> _items = new();
         public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 
-        public Order(Guid id, Guid customerId)
+        public Order(Guid customerId)
         {
-            Id = id == Guid.Empty ? Guid.NewGuid() : id;
+            Id = Guid.NewGuid();
 
             if (customerId == Guid.Empty)
                 throw new DomainException("Le client est obligatoire pour une commande.");
@@ -42,7 +42,7 @@ namespace AdvancedDevSample.Domain.Entities
             if (existingItem != null)
                 throw new DomainException("Ce produit est déjà dans la commande. Modifiez la quantité à la place.");
 
-            var item = new OrderItem(Guid.NewGuid(), Id, productId, quantity, unitPrice);
+            var item = new OrderItem(Id, productId, quantity, unitPrice);
             _items.Add(item);
         }
 

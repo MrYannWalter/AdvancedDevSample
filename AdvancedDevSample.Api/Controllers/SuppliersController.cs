@@ -1,4 +1,5 @@
-using AdvancedDevSample.Application.DTOs;
+using AdvancedDevSample.Application.DTOs.Supplier.SupplierRequests;
+using AdvancedDevSample.Application.DTOs.Supplier.SupplierResponses;
 using AdvancedDevSample.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult GetAll()
         {
             var suppliers = _supplierService.GetAllSuppliers();
-            var response = suppliers.Select(SupplierResponse.FromEntity);
+            var response = suppliers.Select(SupplierResponse.FromSupplier);
             return Ok(response);
         }
 
@@ -36,7 +37,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult GetById(Guid id)
         {
             var supplier = _supplierService.GetSupplier(id);
-            return Ok(SupplierResponse.FromEntity(supplier));
+            return Ok(SupplierResponse.FromSupplier(supplier));
         }
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace AdvancedDevSample.Api.Controllers
         public IActionResult Create([FromBody] CreateSupplierRequest request)
         {
             var supplier = _supplierService.CreateSupplier(request);
-            var response = SupplierResponse.FromEntity(supplier);
+            var response = SupplierResponse.FromSupplier(supplier);
             return CreatedAtAction(nameof(GetById), new { id = supplier.Id }, response);
         }
 
